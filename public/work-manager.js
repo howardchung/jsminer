@@ -1,31 +1,102 @@
+if (typeof(derMiner) == 'undefined') var derMiner = {};
+derMiner.Util = {
+    hex_to_uint32_array: function(hex) {
+        var arr = [];
+        for (var i = 0, l = hex.length; i < l; i += 8) {
+            arr.push((parseInt(hex.substring(i, i + 8), 16)));
+        }
+        return arr;
+    },
+    hex_to_uint16_array: function(hex) {
+        var arr = [];
+        for (var i = 0, l = hex.length; i < l; i += 4) {
+            arr.push((parseInt(hex.substring(i, i + 4), 16)));
+        }
+        return arr;
+    },
+    uint32_array_to_hex: function(arr) {
+        var hex = '';
+        for (var i = 0; i < arr.length; i++) {
+            hex += derMiner.Util.byte_to_hex(arr[i] >>> 24);
+            hex += derMiner.Util.byte_to_hex(arr[i] >>> 16);
+            hex += derMiner.Util.byte_to_hex(arr[i] >>> 8);
+            hex += derMiner.Util.byte_to_hex(arr[i]);
+        }
+        return hex;
+    },
+    uint16_array_to_hex: function(arr) {
+        var hex = '';
+        for (var i = 0; i < arr.length; i++) {
+            hex += derMiner.Util.byte_to_hex(arr[i] >>> 8);
+            hex += derMiner.Util.byte_to_hex(arr[i]);
+        }
+        return hex;
+    },
+    to_uint16_array: function(w) {
+        return [(w & 0xffff0000) >> 16, (w & 0x0000ffff)];
+    },
+    byte_to_hex: function(b) {
+        var tab = '0123456789abcdef';
+        b = b & 0xff;
+        return tab.charAt(b / 16) + tab.charAt(b % 16);
+    },
+    reverseBytesInWord: function(w) {
+        return ((w << 24) & 0xff000000) | ((w << 8) & 0x00ff0000) | ((w >>> 8) & 0x0000ff00) | ((w >>> 24) & 0x000000ff);
+    },
+    reverseBytesInInt: function(w) {
+        return ((w << 8) & 0x0000ff00 | (w >> 8) & 0x000000ff);
+    },
+    reverseBytesInWords: function(words) {
+        var reversed = [];
+        for (var i = 0; i < words.length; i++) reversed.push(derMiner.Util.reverseBytesInWord(words[i]));
+        return reversed;
+    },
+    reverseBytesInInts: function(words) {
+        var reversed = [];
+        for (var i = 0; i < words.length - 1; i += 2) {
+            reversed.push(derMiner.Util.reverseBytesInInt(words[i + 1]));
+            reversed.push(derMiner.Util.reverseBytesInInt(words[i]));
+        }
+        return reversed;
+    },
+    fromPoolString: function(hex, gl) {
+        return gl ? derMiner.Util.reverseBytesInInts(derMiner.Util.hex_to_uint16_array(hex)) : derMiner.Util.reverseBytesInWords(derMiner.Util.hex_to_uint32_array(hex));
+    },
+    toPoolString: function(data, gl) {
+        return gl ? derMiner.Util.uint16_array_to_hex(derMiner.Util.reverseBytesInInts(data)) : derMiner.Util.uint32_array_to_hex(derMiner.Util.reverseBytesInWords(data));
+    },
+    ToUInt32: function(x) {
+        return x >>> 0;
+    }
+};
 var console = window.console ? window.console : {
     log: function() {}
 };
 var worker = null;
 var testmode = false;
-var repeat_to = null;
-var use_to = 0; // 5;
-var no_cache = false;
 var init = false;
-var start = null;
+var start;
 var id = 1;
 // use this in case we can directly connect to a given pool
 // var _url = 'http://' + g_user + ':' + g_password + '@' + g_url + ':' + g_port;
 //var _url = "http://13XHeLLVeFtqef7WD4BDL3fQRqpVTUdG3i:x@gbt.mining.eligius.st:9337";
-var _url = 'index.php';
+var _url = '/work';
+
 function readScript(n) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", n, false);
     xhr.send(null);
     var x = xhr.responseText;
     return x;
-};
+}
 
 function onError(data) {
     $('#info').val(data.status + " " + data.responseText);
 }
 
 function onSuccess(jsonresp) {
+    //got work from server
+    //contact the server for work, expects and submits in old getwork format
     if (worker) {
         try {
             worker.postMessage({
@@ -33,14 +104,16 @@ function onSuccess(jsonresp) {
             });
             worker.terminate();
         }
-        catch (e) {}
+        catch (e) {
+            console.log(e);
+        }
     }
     id = Number(jsonresp.id) + 1;
     var response = jsonresp.result;
     var data = JSON.stringify(response);
     $('#info').val(data);
-    var type = $('[type=radio]');
     //figure out what miner to use
+    var type = $('[type=radio]');
     if (type.length == 0) type = [{
         checked: true
     }, {
@@ -121,8 +194,7 @@ function begin_mining() {
     start = (new Date()).getTime();
     if (testmode) {
         onSuccess({
-            //send a fake success
-            // near match with nonce = 0
+            //work on fake data
             result: {
                 "midstate": "eae773ad01907880889ac5629af0c35438376e8c4ae77906301c65fa89c2779c",
                 "data": "0000000109a78d37203813d08b45854d51470fcdb588d6dfabbe946e92ad207e0000000038a8ae02f7471575aa120d0c85a10c886a1398ad821fadf5124c37200cb677854e0603871d07fff800000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000",
@@ -133,7 +205,9 @@ function begin_mining() {
         });
     }
     else {
-        //real mode
+        //real mode, get actual work from server
+        $.get(_url, onSuccess, "text json");
+        /*
         //set timeout, get new work every x seconds?
         if (use_to) {
             var enqueuMiner = function() {
@@ -148,35 +222,8 @@ function begin_mining() {
             long_poll();
         }
     }
-}
-var long_poll_suc = null;
-
-function long_poll() {
-    var done = function(resp) {
-        if (resp.result || long_poll_suc) {
-            long_poll_suc = true;
-            if (resp.result) onSuccess(resp);
-            long_poll();
-        }
-        else if (long_poll_suc === null) {
-            console.log('Stop polling!!!!');
-            long_poll_suc = false;
-            window.setInterval(get_work, 3 * 60 * 1000);
-        }
-    };
-    $.ajax({
-        url: _url + "/LP" + (no_cache ? "?cache=0&ts=" + (new Date().getTime()) : ''),
-        data: '{ "method": "long-poll", "id": "' + id + ' ", "params": [] }',
-        type: "POST",
-        headers: {},
-        success: done,
-        error: done,
-        dataType: "json"
-    });
-}
-
-function get_work() {
-    $.post(_url + (no_cache ? "?cache=0&ts=" + (new Date().getTime()) : ''), '{ "method": "getwork", "id": "' + id + '", "params": [] }', onSuccess, "text json");
+    */
+    }
 }
 
 function onWorkerMessage(event) {
@@ -184,17 +231,8 @@ function onWorkerMessage(event) {
     if (job.print) console.log('worker:' + job.print);
     if (job.golden_ticket) {
         if (job.nonce) console.log("nonce: " + job.nonce);
-        $('#golden-ticket').val(job.golden_ticket);
-        if (!testmode) {
-            $.post(_url, '{ "method": "getwork", "id": "json", "params": ["' + job.golden_ticket + '"] }', function(data, textStatus) {
-                console.log("manager:" + data + "#" + textStatus);
-                // go to get it... again ;)
-                begin_mining();
-            });
-        }
-        if (repeat_to) {
-            window.clearTimeout(repeat_to);
-        }
+        //we succeeded!  check nonce and golden ticket
+        console.log("golden ticket!");
     }
     console.log(event);
     /*
@@ -210,33 +248,60 @@ function onWorkerMessage(event) {
 }
 
 function onWorkerError(event) {
-    throw event.data;
-}
-/*
-window.onload = function() {
-    onl();
-    // try {
-    var d = document.createElement('div');
-    d.setAttribute('style', 'display:none');
-    var add = false;
-    var arr = ["total-hashes", "hashes-per-second", "golden-ticket", "info"];
-    for (var i = 0; i < arr.length; i++) {
-        var n = arr[i];
-        var l = document.getElementById(n);
-        if (!l) {
-            var e = document.createElement('input');
-            d.appendChild(e);
-            add = true;
-        }
-        else {
-            l.value = "";
-        }
+        throw event.data;
     }
-    if (add) {
-        document.body.appendChild(d);
+    /*
+    var long_poll_suc = null;
+
+    function long_poll() {
+        var done = function(resp) {
+            if (resp.result || long_poll_suc) {
+                long_poll_suc = true;
+                if (resp.result) onSuccess(resp);
+                long_poll();
+            }
+            else if (long_poll_suc === null) {
+                console.log('Stop polling!!!!');
+                long_poll_suc = false;
+                window.setInterval(get_work, 3 * 60 * 1000);
+            }
+        };
+        $.ajax({
+            url: _url + "/LP" + (no_cache ? "?cache=0&ts=" + (new Date().getTime()) : ''),
+            data: '{ "method": "long-poll", "id": "' + id + ' ", "params": [] }',
+            type: "POST",
+            headers: {},
+            success: done,
+            error: done,
+            dataType: "json"
+        });
     }
-    // } catch (e) {
-    //     console.log("manager:" + e);
-    // }
-}
-*/
+    */
+    /*
+    window.onload = function() {
+        onl();
+        // try {
+        var d = document.createElement('div');
+        d.setAttribute('style', 'display:none');
+        var add = false;
+        var arr = ["total-hashes", "hashes-per-second", "golden-ticket", "info"];
+        for (var i = 0; i < arr.length; i++) {
+            var n = arr[i];
+            var l = document.getElementById(n);
+            if (!l) {
+                var e = document.createElement('input');
+                d.appendChild(e);
+                add = true;
+            }
+            else {
+                l.value = "";
+            }
+        }
+        if (add) {
+            document.body.appendChild(d);
+        }
+        // } catch (e) {
+        //     console.log("manager:" + e);
+        // }
+    }
+    */
