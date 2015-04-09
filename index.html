@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>JSMiner</title>
+    <SCRIPT src="//code.jquery.com/jquery-1.11.0.min.js"></SCRIPT>
+    //sha256 implementation
+    <SCRIPT src="/public/sha256.js"></SCRIPT>
+    //utility methods, creates miner object
+    <SCRIPT src="/public/util.js"></SCRIPT>
+    //manages js workers
+    <SCRIPT src="/public/work-manager.js"></SCRIPT>
+    //webgl miner
+    <SCRIPT src="/public/glminer.js"></SCRIPT>
+</head>
+
+<BODY>
+    <p> Some code originally from hamiyoca project. </p>
+    <div id="control"> Mine Method:
+        <input type="radio" name="method" value="js" checked="checked"> Javascript
+        <input type="radio" name="method" value="jsworker"> WebWorker
+        <input type="radio" name="method" value="webgl"> WebGL WebGL Threads:
+        <INPUT id="threads" value="512" />
+        <input type="checkbox" id="testmode"> Testmode (Nonce will be found after ~18 khashes)
+        <button id="start" onclick="begin_mining();">Start</button>
+    </div>
+    <br />Total Hashes:
+    <INPUT id="total-hashes " />
+    <br />Hash/s:
+    <INPUT id="hashes-per-second " />
+    <br />Target/Difficulty:
+    <INPUT id="target " />
+    <br />Golden Ticket:
+    <INPUT id="golden-ticket " />
+    <br />Info:
+    <textarea id="info " style="width: 400px; height: 300px; "></textarea>
+</BODY>
+
+</html>
