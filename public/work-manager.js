@@ -79,7 +79,6 @@ var start;
 var id = 1;
 // use this in case we can directly connect to a given pool
 // var _url = 'http://' + g_user + ':' + g_password + '@' + g_url + ':' + g_port;
-//var _url = "http://13XHeLLVeFtqef7WD4BDL3fQRqpVTUdG3i:x@gbt.mining.eligius.st:9337";
 var _url = '/work';
 
 function readScript(n) {
@@ -235,6 +234,7 @@ function onWorkerMessage(event) {
         console.log("golden ticket!");
     }
     console.log(event);
+    //TODO update webpage state to show user progress
     /*
     if (!job.total_hashes) job.total_hashes = 1;
     var total_time = ((new Date().getTime()) - start) / 1000;
