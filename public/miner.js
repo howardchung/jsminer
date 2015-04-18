@@ -18,9 +18,9 @@ var maxCnt = 5;
 var run = true;
 
 function scanhash(job, progress_report, cb) {
-    var midstate = job.midstate;
+    //var midstate = job.midstate;
     var data = job.data;
-    var hash1 = job.hash1;
+    //var hash1 = job.hash1;
     var target = job.target;
 
     var t = job.t === undefined ? 0 : job.t;
@@ -32,6 +32,7 @@ function scanhash(job, progress_report, cb) {
     while(run) {
 
         data[3] = nonce;
+        /*
         sha256.reset();
         var h1 = sha256.update(midstate, data).state;
 
@@ -40,6 +41,9 @@ function scanhash(job, progress_report, cb) {
         sha256.reset();
 
         var hash = sha256.update(h2).state;
+        */
+        sha256.reset();
+        var hash = sha256.update(data).state;
 
         // console.log(derMiner.Util.toPoolString(hash));
         if (is_golden_hash(hash, target)) {

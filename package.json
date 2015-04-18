@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.12.3"
+    "binascii": "0.0.1",
+    "express": "^4.12.3",
+    "sha.js": "^2.4.0"
   }
 }

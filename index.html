@@ -5,34 +5,34 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
     <title>JSMiner</title>
     <SCRIPT src="//code.jquery.com/jquery-1.11.0.min.js"></SCRIPT>
-    //sha256 implementation
-    <SCRIPT src="/public/sha256.js"></SCRIPT>
-    //webgl miner
+    <script src="/public/sha256.js"></script>
+    <script src="/public/util.js"></script>
     <SCRIPT src="/public/glminer.js"></SCRIPT>
-    //manages js workers
     <SCRIPT src="/public/work-manager.js"></SCRIPT>
 </head>
 
 <BODY>
-    <p> Some code originally from hamiyoca project. </p>
-    <div id="control"> Mine Method:
-        <input type="radio" name="method" value="js" checked="checked"> Javascript
-        <input type="radio" name="method" value="jsworker"> WebWorker
-        <input type="radio" name="method" value="webgl"> WebGL WebGL Threads:
-        <INPUT id="threads" value="512" />
-        <input type="checkbox" id="testmode"> Testmode (Nonce will be found after ~18 khashes)
-        <button id="start" onclick="begin_mining();">Start</button>
-    </div>
-    <br />Total Hashes:
-    <INPUT id="total-hashes " />
-    <br />Hash/s:
-    <INPUT id="hashes-per-second " />
-    <br />Target/Difficulty:
-    <INPUT id="target " />
-    <br />Golden Ticket:
-    <INPUT id="golden-ticket " />
-    <br />Info:
-    <textarea id="info " style="width: 400px; height: 300px; "></textarea>
+        <div id="control">
+		<br />Mine Method: 
+		<input type="radio" name="method" value="js" checked="checked"> Javascript
+		<input type="radio" name="method" value="jsworker"> WebWorker
+		<input type="radio" name="method" value="webgl"> WebGL
+		<br />WebGL Threads: <INPUT id="threads" value="512"/>
+		<!--
+		<br /><input type="checkbox" id="testmode"> Testmode (Nonce will be found after ~18 khashes)
+		-->
+		<br><br><button id="start" onclick="begin_mining(); document.getElementById('start').style.display = 'none';">Start</button>
+                </div">
+		<br />
+		<br />Total Hashes: <INPUT id="total-hashes" />
+		<br />Hash/s: <INPUT id="hashes-per-second" />
+		<!--
+		<br />Target/Difficulty: <INPUT id="target" />
+		-->
+		<br />Golden Ticket: <INPUT id="golden-ticket" />
+		<BR/>
+		<br /><textarea id="info" style="width: 400px; height: 300px;"></textarea>
+		<BR/>
 </BODY>
 
 </html>
