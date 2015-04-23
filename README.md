@@ -4,6 +4,8 @@ An experiment with in-browser distributed bitcoin mining.
 * Howard Chung
 * Kent Jiang
 
+https://github.com/howardc93/jsminer
+
 About
 ----
 JSMiner is an attempt to engage in bitcoin mining in a distributed manner--namely, through visitors' web browsers.
