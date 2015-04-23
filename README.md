@@ -49,11 +49,13 @@ Difficulties
 Connecting this application to the live bitcoin network proved challenging.
 The client-side hashing example we began with used the old "getwork" protocol, which relies on polling the server for new work (once a second).
 We had to research the Stratum protocol and write the code to convert the Stratum data into a block for the client to mine.
+
 In addition, it was difficult to test actual share submission, since bitcoin mining on CPUs is so slow that it would take a very long time in order to find a valid share.
 
 Performance
 ----
 By using WebWorkers, the JavaScript miner achieved speeds of approximately 80Khash/s, considerably slower than a C-implemented miner.
+
 Extensions
 ----
 At this stage, bitcoin mining on CPUs is largely inefficient.
@@ -61,3 +63,5 @@ While possibly profitable for users if run on "free" electricity (from an instit
 ASICs (Application-Specific Integrated Circuits) have proven to be much more efficient in terms of hashes per watt, and currently make up the bulk of the bitcoin mining hash power.
 
 A further optimization would be the use of WebSockets in order to allow the server to push new work to clients.  While the Stratum protocol takes care of the pool pushing work to the server, the server and client currently do not have a two-way connection.  This would lead to slightly improved efficiency, since any work done by clients before the server is able to notify them becomes "stale" and is thus wasted.
+
+Another interesting direction to go in would be to try to utilize the GPU using WebGL.  Traditionally, GPUs have proved to be far more efficient at the SHA256-hashing required in bitcoin mining.  However, the point is likely moot as both CPUs and GPUs have been superseded by ASICs.  This idea might be useful if applied to "altcoins" such as Litecoin, Darkcoin, and others designed to be "ASIC-proof", through high memory bandwidth requirements.
