@@ -20,7 +20,8 @@ The second is a server which coordinates the work done by the clients, and serve
 
 In this implementation, bitcoin mining is done through a pool.  Due to the currently high difficulty of mining, "solo" mining without a pool can take years in order to find a block.
 By mining in a pool, the variance is reduced.
-The pool assigns work (shares) that are easier than the work required to find a block, and distributes rewards among participants accordingly.
+The pool assigns work (shares) that are easier than the work required to find a block.
+When someone in the pool is successful in mining a "real" block, the pool distributes rewards among participants based on the number of shares they submitted.
 
 The server connects to a mining pool using the Stratum TCP protocol.  This allows the pool to "push" new work.
 For example, when a miner anywhere in the world finds a block, the pool needs to notify all participants of this change and assign new work.
