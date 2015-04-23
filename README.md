@@ -8,6 +8,10 @@ https://github.com/howardc93/jsminer
 
 About
 ----
+
+Bitcoin is a digital cryptocurrency made up of processed data blocks used for online and brick-and-mortar purchases. Because bitcoins are limited and their value is determined by market forces, bitcoins are also traded like stocks on various exchanges.
+The purpose of Bitcoin mining is to create new bitcoins as well as ensure that all participants have a consistent view of the bitcoin data.
+
 JSMiner is an attempt to engage in bitcoin mining in a distributed manner--namely, through visitors' web browsers.
 Traditionally, bitcoin mining has been done through standalone programs, which generally require administrator permissions to run.
 By moving the computation to the browser, a visitor merely needs to visit a web page in order to begin mining.
