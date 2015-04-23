@@ -28,9 +28,9 @@ For example, when a miner anywhere in the world finds a block, the pool needs to
 When our server receives this "push" from the pool, it recalculates the block header that clients should hash.
 
 The server has three HTTP endpoints:
-/: The root of the site serves the UI, and allows users to begin mining
-/work: This returns a JSON-encoded job that the client should use to begin mining
-/submit: This endpoint allows the client to submit a successful nonce to the server.
+* /: The root of the site serves the UI, and allows users to begin mining
+* /work: This returns a JSON-encoded job that the client should use to begin mining
+* /submit: This endpoint allows the client to submit a successful nonce to the server.
 
 Clients, on connection to the server, get the current block header from the server and begin hashing.
 Each client selects a random nonce to start hashing with, reducing the possibility of clients doing "overlapping" work.
