@@ -18,9 +18,9 @@ By moving the computation to the browser, a visitor merely needs to visit a web 
 
 Implementation
 ----
-JSMiner consists of two components.
-The first is a client application.
-The second is a server which coordinates the work done by the clients, and serves as a "bridge" between the clients mining in the browser and the bitcoin network.
+JSMiner consists of two components:
+* The first is a client application, consisting of HTML and JavaScript.
+* The second is a Node.js server which coordinates the work done by the clients, and serves as a "bridge" between the clients mining in the browser and the bitcoin network.
 
 In this implementation, bitcoin mining is done through a pool.  Due to the currently high difficulty of mining, "solo" mining without a pool can take years in order to find a block.
 By mining in a pool, the variance is reduced.
